@@ -1,0 +1,7 @@
+*.*pem
+
+app/lib/config.mjs
+
+app/.data
+
+app/.logs
