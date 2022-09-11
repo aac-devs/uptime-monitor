@@ -1,7 +1,13 @@
+node_modules/
+
 *.*pem
 
-app/lib/config.mjs
+*.*mjs
 
-app/.data
+src/lib/config.ts
 
-app/.logs
+.data
+
+.logs
+
+build/
