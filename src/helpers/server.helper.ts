@@ -1,11 +1,11 @@
 import * as int from '../interfaces/server.interface';
 
-export function parseJsonToObject(str: string): object {
+export function parseJsonToObject(str: string): object | undefined {
   try {
     const obj = JSON.parse(str);
     return obj;
   } catch (err) {
-    return {};
+    return undefined;
   }
 }
 

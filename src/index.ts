@@ -15,11 +15,14 @@ import { getErrorMessage } from './helpers/data.helpers';
   try {
     let resp: object = {};
     const userFiles = file.fileFactory('.data/users');
-    const tokenFiles = file.fileFactory('.data/tokens');
-    const aac_devsFile = userFiles('aac-devs');
-    const firstTokenFile = tokenFiles('first-token');
+    const _5557778889File = userFiles('5557778889');
 
-    resp = await aac_devsFile(file.FileOption.DELETE);
+    await _5557778889File(file.FileOption.DELETE);
+
+    // const tokenFiles = file.fileFactory('.data/tokens');
+    // const firstTokenFile = tokenFiles('first-token');
+
+    /*     resp = await aac_devsFile(file.FileOption.DELETE);
     console.log({ resp });
 
     resp = await aac_devsFile(file.FileOption.EXISTS);
@@ -42,6 +45,7 @@ import { getErrorMessage } from './helpers/data.helpers';
 
     resp = await firstTokenFile(file.FileOption.READ_DIRECTORY);
     console.log({ resp });
+ */
   } catch (error) {
     console.log(getErrorMessage(error));
   }

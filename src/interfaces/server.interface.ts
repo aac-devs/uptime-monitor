@@ -10,12 +10,26 @@ export interface RequestListenerData {
 export interface ParsedData {
   trimmedPath: string;
   queryStringObject: ParsedUrlQuery;
-  method?: string;
+  method: string;
   headers: IncomingHttpHeaders;
 }
 
+export interface PayloadData {
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  password?: string;
+  tosAgreement?: boolean;
+}
+
 export interface HandlerData extends ParsedData {
-  payload: object;
+  payload?: {
+    firstName?: string;
+    lastName?: string;
+    phone?: string;
+    password?: string;
+    tosAgreement?: boolean;
+  };
 }
 
 export interface HandlerResponseData {

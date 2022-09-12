@@ -1,5 +1,5 @@
 import http, { IncomingMessage, ServerResponse } from 'http';
-import { parse } from 'url';
+import { parse, UrlWithParsedQuery } from 'url';
 import { StringDecoder } from 'string_decoder';
 import config from './config';
 import * as handlers from './handlers';
@@ -19,14 +19,17 @@ export function main() {
   }
 }
 
-async function parseRequest(reqParams: int.RequestListenerData): Promise<int.ParsedData> {
-  const { url, method, headers } = reqParams.request;
-  const { pathname, query } = parse(url || '', true);
+async function parseRequest(reqParams: int.RequestListenerData): Promise<int.ParsedData | boolean> {
+  const { url, method, headers }: IncomingMessage = reqParams.request;
 
+  if (!(url && method)) return false;
+  const { pathname, query }: UrlWithParsedQuery = parse(url, true);
+
+  if (!(pathname && query)) return false;
   return {
-    trimmedPath: pathname?.replace(/^\/+|\/+$/g, '') || '',
+    trimmedPath: pathname.replace(/^\/+|\/+$/g, ''),
     queryStringObject: query,
-    method: method?.toLowerCase(),
+    method: method.toLowerCase(),
     headers,
   };
 }
@@ -42,10 +45,10 @@ async function handleRequest(parsed: int.ParsedData, reqRes: int.RequestListener
   buffer += remainingData;
 
   const handlerData: int.HandlerData = {
-    trimmedPath,
-    queryStringObject,
     method,
+    trimmedPath,
     headers,
+    queryStringObject,
     payload: helpers.parseJsonToObject(buffer),
   };
 
@@ -58,10 +61,15 @@ async function handleRequest(parsed: int.ParsedData, reqRes: int.RequestListener
 async function handleResponse(data: int.ServerResponseData, { response }: int.RequestListenerData): Promise<void> {
   const { statusCode, error, payload, trimmedPath, method } = data;
 
-  response?.setHeader('Content-Type', 'application/json').writeHead(statusCode).end(JSON.stringify(payload));
+  const answerMessage = error ? { error } : payload;
+
+  response?.setHeader('Content-Type', 'application/json').writeHead(statusCode).end(JSON.stringify(answerMessage));
   helpers.logResponse({ statusCode, trimmedPath, method });
 }
 
 async function server(serverParams: int.RequestListenerData) {
-  await handleResponse(await handleRequest(await parseRequest(serverParams), serverParams), serverParams);
+  const params = await parseRequest(serverParams);
+  if (typeof params === 'object') {
+    await handleResponse(await handleRequest(params, serverParams), serverParams);
+  }
 }
