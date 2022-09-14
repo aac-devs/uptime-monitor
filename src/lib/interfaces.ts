@@ -14,31 +14,37 @@ export interface ParsedData {
   headers: IncomingHttpHeaders;
 }
 
-export interface PayloadData {
+export interface IncommingBody {
+  phone?: string;
   firstName?: string;
   lastName?: string;
-  phone?: string;
   password?: string;
   tosAgreement?: boolean;
+  id?: string;
+  extend?: boolean;
 }
 
-export interface HandlerData extends ParsedData {
-  payload?: {
-    firstName?: string;
-    lastName?: string;
-    phone?: string;
-    password?: string;
-    tosAgreement?: boolean;
-  };
+export interface StoredTokenData {
+  phone: string;
+  tokenId: string;
+  expires: number;
 }
 
-export interface HandlerResponseData {
+export interface HandlerRoute {
+  [index: string]: Function;
+  post: Function;
+  get: Function;
+  put: Function;
+  del: Function;
+}
+
+export interface HandlerRes {
   statusCode: number;
   payload?: object;
   error?: string;
 }
 
-export interface ServerResponseData extends HandlerResponseData {
+export interface ServerResponseData extends HandlerRes {
   trimmedPath?: string;
   method?: string;
 }
@@ -56,4 +62,13 @@ export interface LogData {
   statusCode: number;
   method?: string;
   trimmedPath?: string;
+}
+
+export interface FileManager {
+  dirPath?: string;
+  (fileName: string): Function;
+}
+
+export interface ManageFileOptions {
+  [index: string]: Function;
 }

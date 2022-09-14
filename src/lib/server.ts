@@ -3,8 +3,8 @@ import { parse, UrlWithParsedQuery } from 'url';
 import { StringDecoder } from 'string_decoder';
 import config from './config';
 import * as handlers from './handlers';
-import * as int from '../interfaces/server.interface';
-import * as helpers from '../helpers/server.helper';
+import * as int from './interfaces';
+import * as helpers from './helpers';
 const { httpPort: port, envName } = config;
 
 export function main() {
@@ -44,18 +44,14 @@ async function handleRequest(parsed: int.ParsedData, reqRes: int.RequestListener
   const remainingData = await helpers.requestEndPromisify({ decoder, request });
   buffer += remainingData;
 
-  const handlerData: int.HandlerData = {
-    method,
-    trimmedPath,
-    headers,
-    queryStringObject,
-    payload: helpers.parseJsonToObject(buffer),
-  };
+  const incommingBody: int.IncommingBody | undefined = helpers.parseJsonToObject(buffer);
 
-  const handlerResponse: int.HandlerResponseData =
-    trimmedPath in handlers.router ? await handlers.router[trimmedPath](handlerData) : await handlers.notFound();
+  const handlerResponseFn: int.HandlerRes =
+    trimmedPath in handlers.router
+      ? await handlers.router[trimmedPath](method, queryStringObject, headers, incommingBody)
+      : await handlers.router['notFound'](method);
 
-  return { ...handlerResponse, trimmedPath, method };
+  return { ...handlerResponseFn, trimmedPath, method };
 }
 
 async function handleResponse(data: int.ServerResponseData, { response }: int.RequestListenerData): Promise<void> {

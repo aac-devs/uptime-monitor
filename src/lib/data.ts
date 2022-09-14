@@ -1,9 +1,8 @@
 import fs from 'fs';
 import util from 'util';
 import * as path from 'path';
-import { parseJsonToObject } from '../helpers/server.helper';
-import { getErrorMessage } from '../helpers/data.helpers';
-import * as int from '../interfaces/data.interface';
+import * as helpers from './helpers';
+import * as int from './interfaces';
 
 export enum FileOption {
   CREATE = 'createFile',
@@ -30,15 +29,15 @@ async function createFile(base: string, stringData: string): Promise<object> {
     await util.promisify(fs.close)(fileDescriptor);
     return { message: 'File created successfully' };
   } catch (error) {
-    throw new Error(getErrorMessage(error));
+    throw new Error(helpers.getErrorMessage(error));
   }
 }
 
 async function readFile(base: string): Promise<object> {
   try {
-    return { payload: parseJsonToObject(await util.promisify(fs.readFile)(base, 'utf-8')) };
+    return { payload: helpers.parseJsonToObject(await util.promisify(fs.readFile)(base, 'utf-8')) };
   } catch (error) {
-    throw new Error(getErrorMessage(error));
+    throw new Error(helpers.getErrorMessage(error));
   }
 }
 
@@ -50,7 +49,7 @@ async function updateFile(base: string, stringData: string): Promise<object> {
     await util.promisify(fs.close)(fileDescriptor);
     return { message: 'File updated successfully' };
   } catch (error) {
-    throw new Error(getErrorMessage(error));
+    throw new Error(helpers.getErrorMessage(error));
   }
 }
 
@@ -59,7 +58,7 @@ async function deleteFile(base: string): Promise<object> {
     await util.promisify(fs.unlink)(base);
     return { message: 'File deleted successfully' };
   } catch (error) {
-    throw new Error(getErrorMessage(error));
+    throw new Error(helpers.getErrorMessage(error));
   }
 }
 
@@ -71,7 +70,7 @@ async function readDirectory(base: string): Promise<object> {
     }
     return { message: 'There are no files in the directory' };
   } catch (error) {
-    throw new Error(getErrorMessage(error));
+    throw new Error(helpers.getErrorMessage(error));
   }
 }
 
@@ -95,7 +94,7 @@ export function fileFactory(dirName: string): Function {
         }
         throw new Error(`ERRDEV: '${option}' option is Not defined in 'manageFileOption' object`);
       } catch (error) {
-        throw new Error(getErrorMessage(error).split(',')[0]);
+        throw new Error(helpers.getErrorMessage(error).split(',')[0]);
       }
     };
   };
